@@ -1,0 +1,161 @@
+<div class="page-shell">
+  <section class="hero-card">
+    <div class="hero-copy">
+      <span class="eyebrow">Grupo 4 · Desarrollo Frontend</span>
+      <h1>Gestión de cursos</h1>
+      <p>
+        Interfaz básica en Angular para registrar, listar, editar y eliminar cursos mediante una
+        experiencia clara, elegante y fácil de mantener.
+      </p>
+
+      <div class="hero-meta">
+        <div class="meta-box">
+          <span class="meta-label">Total de cursos</span>
+          <strong>{{ totalCursos() }}</strong>
+        </div>
+        <div class="meta-box">
+          <span class="meta-label">Créditos acumulados</span>
+          <strong>{{ totalCreditos() }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <aside class="team-card">
+      <span class="team-title">Integrantes</span>
+      <ul>
+        <li *ngFor="let integrante of integrantes">{{ integrante }}</li>
+      </ul>
+    </aside>
+  </section>
+
+  <section class="content-grid">
+    <article class="panel form-panel">
+      <div class="panel-header">
+        <div>
+          <span class="section-tag">Formulario</span>
+          <h2>{{ editingId() ? 'Editar curso' : 'Registrar curso' }}</h2>
+        </div>
+        <button
+          *ngIf="editingId()"
+          type="button"
+          class="ghost-button"
+          (click)="cancelEdit()"
+        >
+          Cancelar edición
+        </button>
+      </div>
+
+      <form class="course-form" (ngSubmit)="submitForm()">
+        <div class="field-group">
+          <label for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            name="nombre"
+            type="text"
+            maxlength="120"
+            [(ngModel)]="form.nombre"
+            placeholder="Ej. Programación Web"
+          >
+        </div>
+
+        <div class="field-group">
+          <label for="docente">Docente</label>
+          <input
+            id="docente"
+            name="docente"
+            type="text"
+            maxlength="120"
+            [(ngModel)]="form.docente"
+            placeholder="Ej. Ing. María López"
+          >
+        </div>
+
+        <div class="field-group">
+          <label for="creditos">Créditos</label>
+          <input
+            id="creditos"
+            name="creditos"
+            type="number"
+            min="1"
+            [(ngModel)]="form.creditos"
+            placeholder="Ej. 4"
+          >
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="primary-button" [disabled]="isSubmitting()">
+            {{ isSubmitting() ? 'Guardando...' : (editingId() ? 'Actualizar curso' : 'Registrar curso') }}
+          </button>
+        </div>
+      </form>
+
+      <div
+        *ngIf="feedbackMessage()"
+        class="feedback"
+        [ngClass]="feedbackTone()"
+      >
+        {{ feedbackMessage() }}
+      </div>
+    </article>
+
+    <article class="panel table-panel">
+      <div class="panel-header table-header">
+        <div>
+          <span class="section-tag">Listado</span>
+          <h2>Tabla de cursos</h2>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-box">
+            <input
+              type="text"
+              name="searchTerm"
+              [ngModel]="searchTerm()"
+              (ngModelChange)="searchTerm.set($event)"
+              placeholder="Buscar por nombre, docente, id o créditos"
+            >
+          </div>
+          <button type="button" class="ghost-button" (click)="clearSearch()">Limpiar</button>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading()" class="state-box loading">Cargando cursos...</div>
+
+      <div *ngIf="!isLoading() && filteredCursos().length === 0" class="state-box empty">
+        No hay cursos para mostrar con los criterios actuales.
+      </div>
+
+      <div *ngIf="!isLoading() && filteredCursos().length > 0" class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Nombre</th>
+              <th>Docente</th>
+              <th>Créditos</th>
+              <th class="actions-column">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let curso of filteredCursos(); trackBy: trackByCursoId">
+              <td>{{ curso.id }}</td>
+              <td>{{ curso.nombre }}</td>
+              <td>{{ curso.docente }}</td>
+              <td>{{ curso.creditos }}</td>
+              <td>
+                <div class="action-group">
+                  <button type="button" class="table-button edit" (click)="startEdit(curso)">
+                    Editar
+                  </button>
+                  <button type="button" class="table-button delete" (click)="removeCurso(curso)">
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+</div>
